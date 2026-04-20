@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Chat API</title>
+</head>
+<body>
+    <h1>Test Chat API</h1>
+    <form id="testForm">
+        <input type="text" id="message" placeholder="Enter message" value="hello">
+        <button type="submit">Send</button>
+    </form>
+    <pre id="result"></pre>
+
+    <script>
+        document.getElementById('testForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const message = document.getElementById('message').value;
+            const resultEl = document.getElementById('result');
+            
+            resultEl.textContent = 'Sending...';
+            
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ message })
+                });
+                
+                console.log('Status:', response.status);
+                const data = await response.json();
+                console.log('Data:', data);
+                
+                resultEl.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Error:', error);
+                resultEl.textContent = 'Error: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
